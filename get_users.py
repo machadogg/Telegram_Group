@@ -1,7 +1,15 @@
 from telethon import TelegramClient, sync
+from re import sub as sub
+
+def delete_emoji(weird):
+
+    not_weird = sub(r'[^,ĖíДилшод\w]','',weird)
+    
+
+    return not_weird
 
 api_id = 'your_ID'
-api_hash = 'your_hash'
+api_hash = 'your_HASH'
 
 client = TelegramClient('my_session', api_id, api_hash).start()
 
@@ -19,7 +27,7 @@ client = TelegramClient('my_session', api_id, api_hash).start()
 
 groups = {d.entity.username: d.entity for d in client.get_dialogs() if d.is_channel}
 
-my_group = groups['your_group_name']
+my_group = groups['yourgroup_name']
 
 ids = []
 
@@ -27,24 +35,17 @@ for u in client.get_participants(my_group):
     ids.append([u.username, u.first_name, u.last_name])
 
 
-
-
 with open ('output.csv','w') as file:
 
     file.write('Username, First Name, Last Name\n')
     for usr in ids:
         
-        temp = str(usr)
-        temp = temp.strip('[]')
-        temp = temp.replace("'","")
+        temp = sub(r"['\[\]]","",str(usr))
+        
         try:
-            file.write(temp+'\n')
+            file.write(delete_emoji(temp)+'\n')
         except:
-            loc = []
-            for i in range(len(temp)):
-                if temp[i] == ',':
-                    loc.append(i)
-            temp2 = temp[0:loc[0]]
-            file.write(temp2+',----------,----------\n')
+            print(temp)
+            file.write(temp[0:temp.find(',')]+',----------,----------\n')
 
 print('Task complete')
